@@ -1,0 +1,35 @@
+
+# This analysis is based on R.
+# the input object data is a data.frame. 
+# Rows are patients' ids.
+# Columns include information about survival, PD-L1 expression, and tested gene expression.
+# a is the position of the column that contains the beginning of the tested gene expression data.
+# b is the position of the column that contains the ending of the tested gene expression data.
+# c is the position of the column that contains the PD-L1 expression data.
+
+library(survival)
+library(magrittr)
+library(ggpubr)
+library(survminer)
+
+#Run loop of Cox-PH interaction analysis
+uni_cox <- list()
+for (i in 22:51) {
+  uni <- coxph(Surv(PFS_MONTHS,PFS_CENSOR) ~ data[, i] * data[, 52], data = data, na.action = na.exclude)
+  uni_df <- as.data.frame(as.matrix(coef(summary(uni))))
+  uni_df$feature <- colnames(data)[i]
+  uni_cox[[i]] <- uni_df
+}
+cox_result <- do.call(rbind, uni_cox)
+
+# Select every third row of the output data frame
+idx <- seq(3, nrow(cox_result), by = 3)
+new_cox_result <- cox_result[idx, ]
+
+# Write output data to CSV file
+write.csv(new_cox_result, file="Enter output file path: ",row.names = F,quote = F)
+
+
+
+
+
