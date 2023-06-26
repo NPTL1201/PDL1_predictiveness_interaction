@@ -14,8 +14,8 @@ library(survminer)
 
 #Run loop of Cox-PH interaction analysis
 uni_cox <- list()
-for (i in 22:51) {
-  uni <- coxph(Surv(PFS_MONTHS,PFS_CENSOR) ~ data[, i] * data[, 52], data = data, na.action = na.exclude)
+for (i in a:b) {
+  uni <- coxph(Surv(survival_months,survival_censor) ~ data[, i] * data[, c], data = data, na.action = na.exclude)
   uni_df <- as.data.frame(as.matrix(coef(summary(uni))))
   uni_df$feature <- colnames(data)[i]
   uni_cox[[i]] <- uni_df
